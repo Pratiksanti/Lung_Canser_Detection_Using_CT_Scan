@@ -137,7 +137,7 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
-# Lung cancer CT dataset (DO NOT upload to GitHub)
+# Lung cancer CT dataset 
 The IQ-OTHNCCD lung cancer dataset/
 
 # Medical imaging formats
@@ -145,7 +145,7 @@ The IQ-OTHNCCD lung cancer dataset/
 *.nii
 *.nii.gz
 
-# Trained ML model files (DO NOT upload)
+# Trained ML model files 
 *.keras
 *.h5
 *.pt
