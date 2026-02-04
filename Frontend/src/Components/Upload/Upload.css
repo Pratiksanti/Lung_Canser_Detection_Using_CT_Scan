@@ -1,0 +1,231 @@
+/* ============================
+   PAGE LAYOUT
+============================ */
+.upload-page {
+  padding: 40px;
+  padding-top: 70px;
+  text-align: center;
+  background: #f5f8fa;
+  min-height: 100vh;
+}
+
+.main-title {
+  font-size: 34px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 25px;
+}
+
+/* ============================
+   CARD CONTAINER
+============================ */
+.upload-card {
+  width: 85%;
+  max-width: 900px;
+  margin: auto;
+  background: white;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.08);
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.upload-card h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 25px;
+  color: #1a1a1a;
+}
+
+/* ============================
+   IMAGE DISPLAY (Original + Preprocessed)
+============================ */
+.image-row {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 30px;
+  margin-bottom: 25px;
+  flex-wrap: nowrap;        /* forces side-by-side */
+}
+
+.img-box {
+  width: 45%;
+  min-width: 280px;
+}
+
+
+.img-box {
+  width: 48%;
+  background: #fafafa;
+  padding: 15px;
+  border-radius: 10px;
+  border: 2px dashed #d9d9d9;
+  text-align: center;
+}
+
+.img-box h4 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #444;
+}
+
+.img-box p {
+  color: #777;
+  font-size: 14px;
+}
+
+.img-box img {
+  width: 100%;
+  height: auto;
+  max-height: 250px;
+  border-radius: 8px;
+  object-fit: contain;
+  border: 1px solid #ccc;
+}
+
+/* ============================
+   LOADING SPINNER
+============================ */
+.spinner {
+  width: 45px;
+  height: 45px;
+  border: 5px solid #ddd;
+  border-top-color: #0077ff;
+  border-radius: 50%;
+  margin: auto;
+  margin-top: 40px;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================
+   FILE INPUT
+============================ */
+.file-label {
+  display: block;
+  background: #0077ff;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 12px;
+  margin: 20px auto;
+  width: 60%;
+  max-width: 300px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.25s;
+}
+
+.file-label:hover {
+  background: #005fcc;
+}
+
+.file-input {
+  display: none;
+}
+
+/* ============================
+   UPLOAD BUTTON
+============================ */
+.upload-btn {
+  background: #00b36b;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: white;
+  font-size: 16px;
+  transition: 0.25s;
+  width: 60%;
+  max-width: 300px;
+}
+
+.upload-btn:hover {
+  background: #009d5c;
+}
+
+.upload-btn:disabled {
+  background: #a8a8a8;
+  cursor: not-allowed;
+}
+
+/* ============================
+   MESSAGE TEXT
+============================ */
+.upload-message {
+  margin-top: 15px;
+  color: #d63031;
+  font-weight: 600;
+}
+
+/* ============================
+   RESULT SECTION
+============================ */
+.result-box {
+  margin-top: 35px;
+  padding: 20px;
+  border-radius: 12px;
+  background: #f1f9ff;
+  border-left: 6px solid #0077ff;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.result-box h3 {
+  font-size: 22px;
+  margin-bottom: 18px;
+  color: #0055aa;
+}
+
+.model-result {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.05);
+  text-align: left;
+}
+
+.model-result h4 {
+  font-size: 18px;
+  color: #222;
+  margin-bottom: 6px;
+}
+
+.model-result p {
+  font-size: 15px;
+  margin: 2px 0;
+  color: #444;
+}
+
+/* ============================
+   ANIMATION
+============================ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================
+   RESPONSIVE
+============================ */
+@media (max-width: 768px) {
+  .image-row {
+    flex-direction: column;
+  }
+
+  .img-box {
+    width: 100%;
+  }
+}
+

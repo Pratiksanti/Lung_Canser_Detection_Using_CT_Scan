@@ -1,0 +1,54 @@
+.save-report-page {
+  max-width: 600px;
+  margin: 60px auto;
+  padding: 40px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.save-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 30px 0;
+}
+
+.save-form input,
+.save-form textarea {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+}
+
+.save-form textarea {
+  resize: none;
+  height: 80px;
+}
+
+.status-message {
+  margin-top: 15px;
+  font-weight: 500;
+}
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.back-btn {
+  padding: 12px 26px;
+  background: linear-gradient(135deg, #6b7280, #374151);
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.back-btn:hover {
+  background: linear-gradient(135deg, #4b5563, #1f2937);
+}

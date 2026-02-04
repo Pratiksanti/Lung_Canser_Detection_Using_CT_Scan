@@ -1,0 +1,273 @@
+/* ===============================
+   BASE RESET & TYPOGRAPHY
+================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  background: #f5f8fa;
+  color: #1f2933;
+}
+
+/* ===============================
+   ROOT CONTAINER
+================================ */
+.research-root {
+  min-height: 100vh;
+  padding: 48px 20px;
+  background:
+    radial-gradient(circle at top left, #e6f7f8, transparent 45%),
+    radial-gradient(circle at bottom right, #edf2ff, transparent 45%),
+    #f5f8fa;
+}
+
+/* ===============================
+   HERO (TITLE SECTION)
+================================ */
+.research-hero-new {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.research-hero-new h1 {
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: #003845;
+  letter-spacing: -0.5px;
+}
+
+.research-hero-new p {
+  margin-top: 8px;
+  font-size: 1.05rem;
+  color: #5b6770;
+  max-width: 720px;
+  margin-inline: auto;
+}
+
+/* ===============================
+   MAIN PANEL
+================================ */
+.research-panel {
+  max-width: 1100px;
+  margin: auto;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 30px 28px;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.06),
+    0 2px 6px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e5eaef;
+}
+
+/* ===============================
+   TAB NAVIGATION
+================================ */
+.research-tabs {
+  display: flex;
+  gap: 12px;
+  border-bottom: 1px solid #e5eaef;
+  padding-bottom: 14px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: #f6f9fc;
+  color: #334e68;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  background: #e6f1f3;
+}
+
+.tab.active {
+  background: #003845;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 56, 69, 0.25);
+}
+
+/* ===============================
+   CONTENT
+================================ */
+.research-content-new h2 {
+  font-size: 1.45rem;
+  color: #003845;
+  margin-bottom: 12px;
+}
+
+.research-content-new p {
+  font-size: 0.98rem;
+  line-height: 1.65;
+  color: #334e68;
+  margin-bottom: 14px;
+}
+
+/* ===============================
+   HIGHLIGHT BOX
+================================ */
+.highlight-box {
+  margin-top: 18px;
+  padding: 18px 20px;
+  background: linear-gradient(
+    135deg,
+    #eef7f8,
+    #f4f8ff
+  );
+  border-left: 5px solid #0a9396;
+  border-radius: 14px;
+}
+
+.highlight-box span {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #003845;
+}
+
+.highlight-box ul {
+  padding-left: 20px;
+}
+
+.highlight-box li {
+  margin-bottom: 6px;
+  color: #334e68;
+}
+
+/* ===============================
+   TIMELINE (DATASET)
+================================ */
+.timeline {
+  margin-top: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.step span {
+  min-width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #003845;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.step p {
+  margin: 0;
+  color: #334e68;
+}
+
+/* ===============================
+   MODEL GRID
+================================ */
+.model-grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+.model-card {
+  padding: 20px;
+  border-radius: 16px;
+  background: #f9fbfd;
+  border: 1px solid #e5eaef;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.model-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.model-card h3 {
+  color: #003845;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+
+.model-card p {
+  font-size: 0.9rem;
+  color: #5b6770;
+}
+
+/* ===============================
+   RESULTS
+================================ */
+.results-grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 18px;
+}
+
+.results-grid div {
+  background: #003845;
+  color: #ffffff;
+  padding: 20px 16px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0, 56, 69, 0.35);
+}
+
+.results-grid span {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.results-grid strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 1.5rem;
+}
+
+/* ===============================
+   LISTS & NOTES
+================================ */
+.future-list {
+  padding-left: 20px;
+  margin-bottom: 18px;
+}
+
+.future-list li {
+  margin-bottom: 8px;
+  color: #334e68;
+}
+
+.note {
+  margin-top: 10px;
+  font-size: 0.88rem;
+  color: #5b6770;
+  font-style: italic;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 768px) {
+  .research-panel {
+    padding: 22px 18px;
+  }
+
+  .research-hero-new h1 {
+    font-size: 2.1rem;
+  }
+}
