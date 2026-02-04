@@ -151,3 +151,13 @@ The IQ-OTHNCCD lung cancer dataset/
 *.pt
 *.pth
 *.onnx
+# Backend sensitive & generated files
+Backend/node_modules/
+Backend/.env
+#  Frontend sensitive & generated files
+Frontend/node_modules/
+Frontend/.env
+# python
+Python/preprocessed/
+
+
