@@ -28,7 +28,7 @@ function Footer() {
         {/* Contact Info */}
         <div className="footer-section">
           <h3>Contact Us</h3>
-          <p>Email: dyp@lungcare.org</p>
+          <p>Email: dypcet@lungcare.org</p>
           <p>Phone: +91 7666247188</p>
           <p>Location: DYPCET KOLHAPUR, India</p>
         </div>
