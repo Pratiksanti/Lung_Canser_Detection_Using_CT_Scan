@@ -5,7 +5,7 @@ import { API_BASE } from "../Config/config";
 import "../Profile/Profile.css";
 import "./ReportModal.css";
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://lungcanser-backend.onrender.com";
 
 function ReportModal({ scan, index, onClose }) {
  const handlePrint = () => {

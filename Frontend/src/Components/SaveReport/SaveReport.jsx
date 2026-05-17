@@ -93,7 +93,7 @@ function SaveReport() {
       formData.append("HybridModel", JSON.stringify(results[hybridKey]));
       formData.append("finalCase", results.final_case);
 
-      const res = await fetch("http://localhost:5000/api/report/save", {
+     const res = await fetch("https://lungcanser-backend.onrender.com/api/report/save", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
