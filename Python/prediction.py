@@ -293,7 +293,6 @@ def predict_lung_cancer(image_path):
     image_path = str(image_path)
 
     # ── Clear cached data every time ─────────────────────────
-    cv2.destroyAllWindows()
     gc.collect()
 
     # ── Validate CT Scan ──────────────────────────────────────
