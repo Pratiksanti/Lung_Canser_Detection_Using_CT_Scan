@@ -17,11 +17,13 @@ const app = express();
 // CORS
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "https://lung-canser-detection-using-ct-scan.vercel.app",
+    ],
     credentials: true,
   })
 );
-
 // BODY PARSER
 app.use(express.json());
 
