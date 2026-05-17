@@ -146,8 +146,6 @@ def is_ct_image(image_path):
     # this is specifically a lung CT and not brain/kidney/abdomen.
 
     # Step 9a: Threshold to isolate mid-density pixels
-    # Lung parenchyma: darker than bone/mediastinum, lighter than background
-    # Range: 30–200 gray value isolates lung tissue well
     _, lung_thresh = cv2.threshold(gray, 30, 255, cv2.THRESH_BINARY)
     _, upper_thresh = cv2.threshold(gray, 200, 255, cv2.THRESH_BINARY_INV)
 
@@ -155,7 +153,6 @@ def is_ct_image(image_path):
     lung_mask = cv2.bitwise_and(lung_thresh, upper_thresh)
 
     # Step 9b: Morphological cleanup
-    # Close small gaps within lung tissue, remove noise
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (15, 15))
     lung_mask = cv2.morphologyEx(lung_mask, cv2.MORPH_CLOSE, kernel)
     lung_mask = cv2.morphologyEx(lung_mask, cv2.MORPH_OPEN, kernel)
@@ -166,7 +163,6 @@ def is_ct_image(image_path):
     )
 
     # Step 9d: Filter for large regions
-    # Lungs are big — each should be at least 3% of total image area
     min_area = total_pixels * 0.03
     large_regions = [c for c in contours if cv2.contourArea(c) > min_area]
 
@@ -177,8 +173,6 @@ def is_ct_image(image_path):
         return False
 
     # Step 9e: Check left-right bilateral symmetry
-    # Lungs must be on OPPOSITE sides of the image center
-    # Brain CTs have symmetric halves but don't split left/right the same way
     centroids_x = []
     for c in sorted(large_regions, key=cv2.contourArea, reverse=True)[:2]:
         M = cv2.moments(c)
@@ -187,7 +181,6 @@ def is_ct_image(image_path):
 
     if len(centroids_x) == 2:
         img_center_x = w / 2
-        # One centroid must be clearly left of center, one clearly right
         left_side  = any(x < img_center_x * 0.85 for x in centroids_x)
         right_side = any(x > img_center_x * 1.15 for x in centroids_x)
 
@@ -198,8 +191,6 @@ def is_ct_image(image_path):
             return False
 
     # Step 9f: Aspect ratio sanity check
-    # Axial lung CT slices are roughly square or slightly wider than tall
-    # Very tall narrow images are likely sagittal/coronal — reject
     aspect_ratio = w / h
     if aspect_ratio < 0.5 or aspect_ratio > 2.5:
         print("❌ Rejected: Unusual aspect ratio — likely not an axial lung CT")
@@ -208,8 +199,6 @@ def is_ct_image(image_path):
         return False
 
     # Step 9g: Central bright band check (mediastinum/spine)
-    # In axial lung CTs the center vertical strip is brighter
-    # (heart + spine + mediastinum) while both sides are darker (lungs)
     center_strip_x1 = int(w * 0.35)
     center_strip_x2 = int(w * 0.65)
     left_strip_x2   = int(w * 0.30)
@@ -219,7 +208,6 @@ def is_ct_image(image_path):
     left_mean   = np.mean(gray[:, :left_strip_x2])
     right_mean  = np.mean(gray[:, right_strip_x1:])
 
-    # Center should be brighter than both sides (mediastinum brighter than lungs)
     if not (center_mean > left_mean * 1.05 and center_mean > right_mean * 1.05):
         print("❌ Rejected: No central bright band — not a typical axial lung CT")
         del lung_mask, lung_thresh, upper_thresh
@@ -293,7 +281,7 @@ def predict_lung_cancer(image_path):
     image_path = str(image_path)
 
     # ── Clear cached data every time ─────────────────────────
-    gc.collect()
+    gc.collect()  # ✅ Removed cv2.destroyAllWindows() — not supported on server
 
     # ── Validate CT Scan ──────────────────────────────────────
     if not is_ct_image(image_path):
