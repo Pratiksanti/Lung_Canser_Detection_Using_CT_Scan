@@ -2,6 +2,8 @@ import tensorflow as tf
 import cv2
 import numpy as np
 import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'   # ← add this as first line
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import uuid
 import gc
 from collections import Counter

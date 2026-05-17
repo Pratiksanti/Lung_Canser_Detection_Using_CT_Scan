@@ -1,6 +1,10 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'        # ← force CPU only
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 import uuid
 from prediction import predict_lung_cancer
 
