@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Fuse from 'fuse.js';
-import './Chatbot.css';
+import './chatbot.css';
 
 // ── Knowledge Base ──────────────────────────────────────────────────────────
 const KB = {
