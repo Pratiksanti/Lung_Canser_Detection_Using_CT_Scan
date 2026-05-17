@@ -264,7 +264,7 @@ def predict_lung_cancer(image_path):
     image_path = str(image_path)
 
     # ── Cleanup Before Prediction ─────────────────────────────
-    cv2.destroyAllWindows()
+    # cv2.destroyAllWindows()
     gc.collect()
 
     # ── Validate CT Scan ──────────────────────────────────────
