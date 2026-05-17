@@ -60,3 +60,25 @@
     color: #555;
     font-size: 1rem;
   }
+  @media (max-width: 480px) {
+  .symptoms-container {
+    padding: 40px 0;           
+  }
+
+  .symptoms-title {
+    font-size: 2rem;          
+  }
+
+  .symptoms-subtitle {
+    font-size: 1rem;
+  }
+
+  .symptoms-grid {
+    grid-template-columns: 1fr; 
+    gap: 16px;
+  }
+
+  .symptom-card {
+    padding: 24px 16px;       
+  }
+}

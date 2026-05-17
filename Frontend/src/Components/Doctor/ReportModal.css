@@ -269,3 +269,47 @@
     print-color-adjust: exact;
   }
 }
+@media (max-width: 600px) {
+  .modal-box {
+    border-radius: 16px;     /* ← softer on small screens */
+    max-height: 95vh;        /* ← more height on mobile */
+  }
+
+  .modal-header {
+    padding: 18px 18px 14px; /* ← tighter padding */
+  }
+
+  .modal-header h2 {
+    font-size: 1.2rem;       /* ← fits without wrapping */
+  }
+
+  .modal-body {
+    padding: 18px;           /* ← tighter padding */
+  }
+
+  .report-grid {
+    grid-template-columns: 1fr; /* ← stack to single column */
+  }
+
+  .report-top {
+    flex-direction: column;  /* ← logo + meta stack vertically */
+    gap: 8px;
+  }
+
+  .report-table th,
+  .report-table td {
+    padding: 10px 12px;      /* ← less padding in table */
+    font-size: 0.85rem;      /* ← smaller text in table */
+  }
+
+  .modal-actions {
+    flex-direction: column;  /* ← buttons stack vertically */
+    padding: 14px 18px 20px;
+  }
+
+  .btn-print,
+  .btn-close {
+    width: 100%;
+    text-align: center;
+  }
+}

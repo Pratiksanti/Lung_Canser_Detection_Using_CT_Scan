@@ -141,3 +141,39 @@
   font-weight: 500;
   color: #065f46;
 }
+@media (max-width: 600px) {
+  .result-page {
+    margin: 20px auto;
+    padding: 24px 16px;        /* ← tighter padding on phone */
+    border-radius: 10px;
+  }
+
+  .result-page h1 {
+    font-size: 22px;           /* ← fits without wrapping */
+  }
+
+  .result-table {
+    display: block;
+    overflow-x: auto;          /* ← table scrolls horizontally */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .result-table th,
+  .result-table td {
+    padding: 10px 8px;         /* ← tighter cells */
+    font-size: 13px;
+  }
+
+  .action-buttons {
+    flex-direction: column;    /* ← buttons stack vertically */
+    align-items: center;
+    gap: 10px;
+  }
+
+  .back-btn,
+  .save-btn {
+    width: 100%;               /* ← full width buttons */
+    margin-top: 0;
+    text-align: center;
+  }
+}

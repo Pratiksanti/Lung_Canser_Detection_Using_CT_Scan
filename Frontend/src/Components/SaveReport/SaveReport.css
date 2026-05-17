@@ -52,3 +52,26 @@
 .back-btn:hover {
   background: linear-gradient(135deg, #4b5563, #1f2937);
 }
+@media (max-width: 480px) {
+  .save-report-page {
+    margin: 20px auto;
+    padding: 24px 16px;        /* ← tighter on phone */
+    border-radius: 10px;
+  }
+
+  .save-form input,
+  .save-form textarea {
+    font-size: 16px;           /* ← prevents iOS auto-zoom on tap */
+  }
+
+  .action-buttons {
+    flex-direction: column;    /* ← buttons stack vertically */
+    align-items: center;
+    gap: 10px;
+  }
+
+  .back-btn {
+    width: 100%;               /* ← full width button */
+    text-align: center;
+  }
+}

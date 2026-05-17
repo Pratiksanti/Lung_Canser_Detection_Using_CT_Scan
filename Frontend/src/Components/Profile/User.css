@@ -291,13 +291,34 @@
 
 /* ─── Responsive ─────────────────────────────────────────────────────────────── */
 @media (max-width: 540px) {
+  .user-profile-container {
+    padding: 30px 12px;        /* ← less outer padding on phone */
+    align-items: flex-start;   /* ← prevents squishing on short screens */
+  }
+
   .user-profile-card {
-    padding: 36px 24px;
+    padding: 32px 18px;        /* ← tighter card padding */
+    gap: 24px;                 /* ← less gap between sections */
   }
 
   .user-avatar-circle {
     width: 76px;
     height: 76px;
     font-size: 1.8rem;
+  }
+
+  .user-info-row {
+    flex-direction: column;    /* ← label + value stack vertically */
+    align-items: flex-start;
+    gap: 4px;
+    padding: 10px 0;
+  }
+
+  .user-form-row input {
+    font-size: 16px;           /* ← prevents iOS auto-zoom on tap */
+  }
+
+  .user-password-section {
+    padding: 18px 14px;        /* ← tighter on small screens */
   }
 }

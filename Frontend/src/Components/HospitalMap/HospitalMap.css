@@ -385,4 +385,33 @@
   .route-banner   { flex-direction: column; align-items: flex-start; }
   .selected-hospital-card { flex-direction: column; align-items: flex-start; }
   .dropdown-addr  { max-width: 220px; }
+
+  /* ── additions ── */
+  .hospital-map-page {
+    padding: 1rem 1rem 2rem;  /* ← less side padding on phone */
+  }
+
+  .search-input {
+    font-size: 16px;           /* ← prevents iOS auto-zoom on tap */
+  }
+
+  .card-actions {
+    flex-direction: column;    /* ← buttons stack, easier to tap */
+  }
+
+  .card-directions-btn,
+  .card-external-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .route-banner-actions {
+    width: 100%;               /* ← route buttons take full width */
+  }
+
+  .open-maps-btn,
+  .clear-route-btn {
+    flex: 1;
+    text-align: center;
+  }
 }

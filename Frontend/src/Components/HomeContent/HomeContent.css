@@ -787,12 +787,17 @@ body {
 }
 
 @media (max-width: 600px) {
+  .home { gap: 60px; }
   .doctor-grid { grid-template-columns: 1fr; }
   .step-container { grid-template-columns: 1fr; }
   .cause-list { gap: 16px; }
+  .cause-card { width: calc(50% - 8px); }  /* ← fix */
   .hero-text h1 { font-size: 2.2rem; }
   .section-header h2 { font-size: 1.8rem; }
-  .cta-inner { padding: 50px 24px; }
-  .cta-inner h2 { font-size: 2rem; }
+  .cta-section { padding: 0 4%; }           /* ← fix */
+  .cta-inner { padding: 50px 20px; }
+  .cta-inner h2 { font-size: 1.8rem; }
   .btn-group { flex-direction: column; align-items: center; }
+  .hero-image-wrap { width: 100%; display: flex; justify-content: center; }  /* ← fix */
+  .hero-image img { width: 100%; max-width: 300px; }  /* ← fix */
 }

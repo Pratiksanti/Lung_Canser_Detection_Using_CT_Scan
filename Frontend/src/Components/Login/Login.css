@@ -197,3 +197,32 @@
   box-shadow: 0 6px 16px rgba(56, 189, 248, 0.4);
 }
 
+@media (max-width: 480px) {
+  .login-container {
+    padding: 1rem;             /* ← less padding on small phones */
+    align-items: flex-start;   /* ← prevents squishing on short screens */
+    padding-top: 2rem;
+  }
+
+  .form-box {
+    padding: 2rem 1.5rem;      /* ← tighter card padding */
+    border-radius: 14px;
+  }
+
+  .form-box h2 {
+    font-size: 1.7rem;         /* ← title fits without overflow */
+  }
+
+  .form-box input {
+    font-size: 16px;           /* ← prevents iOS auto-zoom on tap */
+  }
+
+  .role-box {
+    gap: 12px;                 /* ← less gap between role buttons */
+  }
+
+  .role-box label {
+    padding: 8px 12px;         /* ← smaller padding fits on phone */
+    font-size: 0.85rem;
+  }
+}

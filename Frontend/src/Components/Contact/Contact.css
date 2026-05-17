@@ -168,16 +168,25 @@ textarea.error {
 }
 
 /* ---- Responsive ---- */
-@media (max-width: 880px) {
-  .contact-card {
-    grid-template-columns: 1fr;
-    padding: 24px;
-  }
-}
-
 @media (max-width: 520px) {
   .btn-primary,
   .btn-ghost {
     width: 100%;
+  }
+
+  .form-actions {
+    flex-direction: column; /* ← buttons stack vertically */
+  }
+
+  .contact-shell {
+    padding: 30px 16px;    /* ← less padding on small screens */
+  }
+
+  .contact-header h2 {
+    font-size: 22px;       /* ← title fits better */
+  }
+
+  .error-message {
+    width: 100%;           /* ← error msg doesn't overflow */
   }
 }

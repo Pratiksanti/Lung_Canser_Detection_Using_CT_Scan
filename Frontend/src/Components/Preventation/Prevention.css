@@ -80,3 +80,25 @@
   background-color: #00695c;
   transform: scale(1.05);
 }
+@media (max-width: 480px) {
+  .prevention-container {
+    padding: 40px 0;           /* ← less top/bottom space */
+  }
+
+  .prevention-title {
+    font-size: 2rem;           /* ← fits without wrapping */
+  }
+
+  .prevention-subtitle {
+    font-size: 1rem;
+  }
+
+  .prevention-grid {
+    grid-template-columns: 1fr; /* ← force single column */
+    gap: 16px;
+  }
+
+  .prevention-card {
+    padding: 24px 16px;        /* ← tighter card on small screen */
+  }
+}

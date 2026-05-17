@@ -320,6 +320,7 @@
   .chatbot-popup {
     width: 92vw;
     right: 4vw;
+    left: 4vw;        /* ← prevents overflow on left side */
     height: 72vh;
     bottom: 88px;
     border-radius: 16px;
@@ -337,8 +338,17 @@
     padding: 8px 10px 6px;
   }
 
-  .quick-btn {
+ .quick-btn {
     font-size: 11px;
     padding: 3px 10px;
+  }
+
+  .message {
+    font-size: 13px;   /* ← slightly smaller on tiny screens */
+    max-width: 95%;    /* ← more space for bubbles */
+  }
+
+  .chatbot-input input {
+    font-size: 16px;   /* ← prevents iOS auto-zoom on focus */
   }
 }

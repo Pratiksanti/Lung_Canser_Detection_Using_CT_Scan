@@ -240,55 +240,51 @@
    MOBILE STYLES
 -------------------------- */
 @media (max-width: 768px) {
+  .nav-container {
+    position: relative;
+  }
+
   .nav-links {
     position: absolute;
-    top: 70px;
+    top: 100%;
     right: 0;
+    left: 0;
+    width: 100%;
     background: #0a9396;
     flex-direction: column;
-    width: 200px;
     text-align: center;
     padding: 20px 0;
     gap: 15px;
-    border-radius: 8px 0 0 8px;
+    border-radius: 0 0 8px 8px;
+    z-index: 999;
     opacity: 0;
-    transform: translateX(100%);
+    transform: translateY(-10px);
+    pointer-events: none;
     transition: all 0.3s ease;
   }
 
   .nav-links.open {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
+    pointer-events: auto;
   }
 
   .hamburger {
     display: flex;
   }
 
-  .login-icon {
-    position: absolute;
-    top: 18px;
-    right: 60px;
-  }
-
-  /* Hide long email text on very small screens */
   .user-email {
     display: none;
   }
 
   .nav-actions {
-    position: absolute;
-    right: 16px;
-    top: 14px;
+    position: static; /* let flexbox handle it naturally */
   }
 
-  /* Make dropdown full width-ish on small screens for easier tapping */
   .user-dropdown {
-    right: 8px;
-    left: 8px;
+    right: 0;
+    left: auto;
+    min-width: 160px;
     top: calc(100% + 10px);
-    min-width: unset;
-    width: calc(100% - 32px);
-    transform-origin: top center;
   }
 }

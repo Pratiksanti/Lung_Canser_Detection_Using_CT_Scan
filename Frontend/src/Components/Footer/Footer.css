@@ -68,7 +68,16 @@
     text-align: center;
   }
 
+  .footer-section {
+    min-width: 100%;
+  }
+
   .footer-section h3 {
     border: none;
+    display: block;
+  }
+
+  .footer-section ul li {
+    margin: 12px 0;
   }
 }
