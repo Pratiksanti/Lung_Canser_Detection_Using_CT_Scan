@@ -61,7 +61,7 @@ function Upload() {
     try {
       setLoading(true);
 
-      const res = await fetch("http://127.0.0.1:5000/predict", {
+      const res = await fetch("https://pratiksanti-lung-cancer-python.hf.space/predict",  {
         method: "POST",
         body: formData,
       });
