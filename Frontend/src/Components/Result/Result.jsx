@@ -44,7 +44,11 @@ function Result() {
         </thead>
         <tbody>
           {Object.entries(results)
-            .filter(([key]) => key !== "final_case")
+            .filter(
+              ([key]) =>
+                key !== "final_case" &&
+                key !== "Ensemble"
+            )
             .map(([model, value]) => (
               <tr key={model}>
                 <td>{model}</td>

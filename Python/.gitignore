@@ -1,0 +1,8 @@
+modules/ 
+*.keras 
+*.h5 
+__pycache__/ 
+.env 
+preprocessed/ 
+uploads/ 
+venv/ 

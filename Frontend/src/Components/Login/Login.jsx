@@ -79,10 +79,10 @@ function Login() {
       });
 
       // Role-based redirect
-      if (user.role === "doctor") {
-        navigate("/lung-scan");
-      } else {
-        navigate("/");
+     if (user.role === "doctor") {
+     navigate("/", { replace: true });   
+     } else {
+     navigate("/", { replace: true });
       }
     } catch (err) {
       Swal.fire({

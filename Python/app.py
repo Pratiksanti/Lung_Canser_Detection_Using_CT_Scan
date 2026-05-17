@@ -3,6 +3,9 @@ from flask_cors import CORS
 import os
 import uuid
 from prediction import predict_lung_cancer
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0' 
 
 # ===============================
 # FLASK APP

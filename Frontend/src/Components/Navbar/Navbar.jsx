@@ -96,12 +96,29 @@ function Navbar() {
         </div>
 
         <ul className={`nav-links ${isOpen ? "open" : ""}`}>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/symptoms">Symptoms</Link></li>
-          <li><Link to="/prevention">Prevention</Link></li>
-          <li><Link to="/research">Research</Link></li>
-          <li><Link to="/contact">Contact</Link></li>
-          <li><Link to="/upload">Lung-Scan</Link></li>
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+          <li>
+            <Link to="/symptoms">Symptoms</Link>
+          </li>
+          <li>
+            <Link to="/prevention">Prevention</Link>
+          </li>
+          <li>
+            <Link to="/research">Research</Link>
+          </li>
+          <li>
+            <Link to="/contact">Contact</Link>
+          </li>
+          {user?.role === "doctor" && (
+            <li>
+              <Link to="/upload">Lung-Scan</Link>
+            </li>
+          )}
+          <li>
+            <Link to="/hospitals">Find Hospitals</Link>
+          </li>
         </ul>
 
         <div className="nav-actions">

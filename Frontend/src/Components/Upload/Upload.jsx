@@ -6,15 +6,11 @@ function Upload() {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-
   const [preprocessImg, setPreprocessImg] = useState(null);
   const [preprocessLoading, setPreprocessLoading] = useState(false);
 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
-  // ===============================
-  // FILE CHANGE + PREPROCESS
-  // ===============================
   const handleFileChange = (e) => {
     const uploaded = e.target.files[0];
     if (!uploaded) return;
@@ -35,7 +31,6 @@ function Upload() {
     setMessage("");
     setFile(uploaded);
 
-    // Preprocess to 224x224 (ONLY FOR PREVIEW)
     setPreprocessLoading(true);
 
     const img = new Image();
@@ -54,9 +49,6 @@ function Upload() {
     };
   };
 
-  // ===============================
-  // UPLOAD & PREDICT
-  // ===============================
   const handleUpload = async () => {
     if (!file) {
       setMessage("Please select a file first!");
@@ -64,7 +56,7 @@ function Upload() {
     }
 
     const formData = new FormData();
-    formData.append("scan", file); 
+    formData.append("scan", file);
 
     try {
       setLoading(true);
@@ -82,11 +74,16 @@ function Upload() {
         return;
       }
 
-      // Save result
+      // Save results
       localStorage.setItem("modelResults", JSON.stringify(data));
 
-     
-      navigate("/result");
+      //  Save image as base64 so SaveReport can use it automatically
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        localStorage.setItem("uploadedScanImage", reader.result);
+        navigate("/result");
+      };
+      reader.readAsDataURL(file);
 
     } catch (err) {
       console.error(err);

@@ -1,7 +1,9 @@
+// DoctorRoute.jsx — only a route guard, nothing else
 import React from "react";
 import { Navigate } from "react-router-dom";
+import { useLogin } from "../LoginContext/LoginContext";
 
-const DoctorRoute = ({ children }) => {
+function DoctorRoute({ children }) {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
 
@@ -10,10 +12,10 @@ const DoctorRoute = ({ children }) => {
   }
 
   if (role !== "doctor") {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/" replace />;  // ← blocks normal users
   }
 
   return children;
-};
+}
 
 export default DoctorRoute;

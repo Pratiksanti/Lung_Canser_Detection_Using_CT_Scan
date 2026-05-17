@@ -11,7 +11,10 @@ import Prevention from "./Components/Preventation/preventation";
 import DoctorRoute from "./Components/Doctor/DoctorRoute";
 import Result from "./Components/Result/Result";
 import SaveReport from "./Components/SaveReport/SaveReport";
-
+import Chatbot from "./Components/Chatbot/chatbot";
+import HospitalMap from "./Components/HospitalMap/HospitalMap";
+import Profile from "./Components/Profile/Profile";
+import DoctorProfile from "./Components/Doctor/DoctorProfile";
 import "./App.css";
 
 function App() {
@@ -50,18 +53,27 @@ function App() {
               </DoctorRoute>
             }
           />
+           <Route path="/doctor-profile" element={<DoctorRoute><DoctorProfile /></DoctorRoute>} />
 
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/symptoms" element={<Symptoms />} />
           <Route path="/research" element={<Research />} />
           <Route path="/prevention" element={<Prevention />} />
+          <Route path="/hospitals" element={<HospitalMap />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="*" element={<HomeContent />} />
         </Routes>
       </main>
 
       <Footer />
+      <Chatbot></Chatbot>
+      
     </div>
   );
 }
 
 export default App;
+
+
+

@@ -1,0 +1,382 @@
+.profile-container {
+  min-height: 100vh;
+  padding: 32px;
+  background: linear-gradient(180deg, #e4fbf6 0%, #f9fcfe 100%);
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: #0d3741;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  margin-bottom: 30px;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  color: #0f766e;
+  letter-spacing: 0.18em;
+  font-size: 0.88rem;
+  margin-bottom: 8px;
+}
+
+.profile-header h1 {
+  margin: 0;
+  font-size: clamp(2.1rem, 3vw, 3.2rem);
+  color: #0d3741;
+}
+
+.subtitle {
+  max-width: 680px;
+  line-height: 1.8;
+  color: #4f656f;
+  margin-top: 12px;
+}
+
+.hero-card {
+  min-width: 220px;
+  padding: 24px 22px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #0d9488 0%, #115e59 100%);
+  color: white;
+  box-shadow: 0 28px 60px rgba(13, 148, 136, 0.15);
+}
+
+.hero-card span {
+  display: block;
+  opacity: 0.88;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.hero-card strong {
+  font-size: 1.8rem;
+  line-height: 1.2;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 28px;
+}
+
+.profile-card,
+.main-panel,
+.notification-card,
+.edit-panel,
+.history-panel {
+  background: white;
+  border-radius: 28px;
+  box-shadow: 0 18px 50px rgba(21, 82, 83, 0.08);
+  border: 1px solid rgba(15, 61, 66, 0.08);
+}
+
+.profile-card {
+  padding: 28px;
+  display: grid;
+  gap: 22px;
+}
+
+.avatar-wrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.profile-avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 6px solid rgba(13, 148, 136, 0.15);
+  box-shadow: 0 18px 38px rgba(13, 148, 136, 0.16);
+}
+
+.avatar-badge {
+  position: absolute;
+  right: 16px;
+  bottom: 10px;
+  background: #0d9488;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  letter-spacing: 0.04em;
+}
+
+.profile-summary h2 {
+  margin: 0;
+  font-size: 1.85rem;
+  color: #0d3741;
+}
+
+.profile-summary .title {
+  margin: 8px 0;
+  color: #115e59;
+  font-weight: 600;
+}
+
+.profile-summary .email {
+  margin: 0;
+  color: #556973;
+}
+
+.stat-block {
+  display: grid;
+  gap: 14px;
+}
+
+.stat-block div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: #f1fffc;
+  border: 1px solid rgba(13, 148, 136, 0.16);
+}
+
+.stat-block span {
+  color: #416a64;
+}
+
+.stat-block strong {
+  font-size: 1.35rem;
+  color: #0d3741;
+}
+
+.action-group {
+  display: grid;
+  gap: 12px;
+}
+
+.upload-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #f0fdfa;
+  color: #0f766e;
+  border: 1px solid rgba(13, 148, 136, 0.16);
+  cursor: pointer;
+}
+
+.upload-label input {
+  display: none;
+}
+
+.button {
+  width: 100%;
+  border: none;
+  border-radius: 18px;
+  padding: 14px 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.button-primary {
+  background: linear-gradient(135deg, #0d9488 0%, #115e59 100%);
+  color: white;
+  box-shadow: 0 18px 28px rgba(13, 148, 136, 0.16);
+}
+
+.button-outline {
+  background: transparent;
+  color: #0d3741;
+  border: 1px solid rgba(15, 61, 66, 0.14);
+}
+
+.button-secondary {
+  background: #f9fafb;
+  color: #0d3741;
+  border: 1px solid rgba(15, 61, 66, 0.12);
+}
+
+.main-panel {
+  padding: 28px;
+  display: grid;
+  gap: 24px;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.metric-card {
+  padding: 22px;
+  border-radius: 24px;
+  background: #f1fffc;
+  border: 1px solid rgba(15, 61, 66, 0.1);
+}
+
+.metric-card h3 {
+  margin: 0 0 12px;
+  color: #0d3741;
+}
+
+.metric-value {
+  font-size: 2.1rem;
+  color: #0d9488;
+  margin: 0;
+}
+
+.metric-card span {
+  color: #556973;
+}
+
+.edit-panel,
+.history-panel {
+  padding: 24px;
+}
+
+.panel-header {
+  margin-bottom: 22px;
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #0d3741;
+}
+
+.panel-header p {
+  margin: 8px 0 0;
+  color: #556973;
+  line-height: 1.75;
+}
+
+.form-row {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.form-row label {
+  display: grid;
+  gap: 10px;
+  color: #0d3741;
+  font-weight: 600;
+}
+
+.form-row input,
+.form-row textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid rgba(15, 61, 66, 0.14);
+  border-radius: 16px;
+  background: #f8fdfb;
+  color: #0d3741;
+  font-size: 1rem;
+}
+
+.form-row textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 22px;
+  border-radius: 20px;
+  background: #f7fffc;
+  border: 1px solid rgba(13, 148, 136, 0.12);
+}
+
+.history-item strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #0d3741;
+}
+
+.history-item p {
+  margin: 0;
+  color: #556973;
+  line-height: 1.7;
+}
+
+.history-item span {
+  color: #0d9488;
+  font-weight: 700;
+}
+
+.empty-state {
+  background: #eefdf9;
+  border-radius: 22px;
+  padding: 24px;
+  border: 1px solid rgba(13, 148, 136, 0.13);
+  color: #0d3741;
+}
+
+.profile-loading {
+  min-height: 70vh;
+  display: grid;
+  place-items: center;
+  gap: 16px;
+  color: #0d3741;
+}
+
+.spinner {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 6px solid rgba(13, 148, 136, 0.15);
+  border-top-color: #0d9488;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 1120px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .profile-container {
+    padding: 20px 16px;
+  }
+
+  .profile-card,
+  .main-panel {
+    border-radius: 24px;
+  }
+
+  .hero-card {
+    width: 100%;
+  }
+}
+.notification-card {
+  background: white;
+  border-radius: 28px;
+  box-shadow: 0 18px 50px rgba(21, 82, 83, 0.08);
+  border: 1px solid rgba(15, 61, 66, 0.08);
+  padding: 24px;
+}

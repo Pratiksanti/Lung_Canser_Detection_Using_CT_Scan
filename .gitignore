@@ -160,4 +160,16 @@ Frontend/.env
 # python
 Python/preprocessed/
 
+# Python
+Python/venv/
+Python/modules/
+Python/uploads/
+Python/__pycache__/
+Python/*.keras
+Python/*.h5
 
+# Backend
+Backend/uploads/
+
+# Frontend
+Frontend/dist/

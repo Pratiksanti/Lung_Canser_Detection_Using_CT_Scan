@@ -9,7 +9,8 @@ const authRoutes = require("./routes/auth");
 const predictRoutes = require("./routes/Prediction");
 const contactRoutes = require("./routes/Contact");
 const scanRoutes = require("./routes/Scan");
-const reportRoutes = require("./routes/reportRoutes"); 
+const reportRoutes = require("./routes/reportRoutes");
+const profileRoute = require("./routes/profile");
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use("/api/v1/contact", contactRoutes);
 app.use("/api/v1/predict", predictRoutes);
 app.use("/api/v1/scan", scanRoutes);
 app.use("/api/report", reportRoutes);
+app.use("/api/v1/profile", profileRoute); 
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
@@ -45,10 +47,8 @@ if (!MONGO_URI) {
 async function startServer() {
   try {
     console.log("👉 Connecting to MongoDB:", MONGO_URI);
-
     await mongoose.connect(MONGO_URI);
     console.log("✅ MongoDB connected");
-
     app.listen(PORT, () => {
       console.log(`🚀 Server running on http://localhost:${PORT}`);
     });
@@ -60,7 +60,6 @@ async function startServer() {
 
 startServer();
 
-// SAFETY HANDLERS
 process.on("unhandledRejection", (reason) => {
   console.error("Unhandled Rejection:", reason);
 });
