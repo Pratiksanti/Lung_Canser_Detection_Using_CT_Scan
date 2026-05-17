@@ -4,42 +4,7 @@ import numpy as np
 import os
 import uuid
 import gc
-import gdown                    # ← add this
 from collections import Counter
-
-# ─────────────────────────────────────────────────────────────
-# Download Models from Google Drive if not present
-# ─────────────────────────────────────────────────────────────
-def download_models():
-    os.makedirs('modules', exist_ok=True)
-    
-    models = {
-        'modules/resnet50.keras':     '1PHuwfFuAACH_w7g80enlBz8F7IYuwNgE',
-        'modules/vgg16.keras':        '1y3Nx4dOAvnyuMdkcW_zmDAMFz_i4pa12',
-        'modules/inceptionv3.keras':  '1IqpAkePh4M6ovn66ibgiiTun05Qf-vDT',
-        'modules/advanced_cnn.keras': '1Hzv7I76ddYezyZ_VE_N-3ZWkZE4uXWZZ'
-    }
-    
-    for path, file_id in models.items():
-        if not os.path.exists(path):
-            print(f"Downloading {path}...")
-            gdown.download(
-                f'https://drive.google.com/uc?id={file_id}',
-                path,
-                quiet=False
-            )
-            print(f"✅ {path} downloaded!")
-        else:
-            print(f"✅ {path} already exists!")
-
-download_models()
-
-# ─────────────────────────────────────────────────────────────
-# Class Names
-# ─────────────────────────────────────────────────────────────
-CLASS_NAMES = ["Benign cases", "Malignant cases", "Normal cases"]
-
-# rest of your code...
 
 # ─────────────────────────────────────────────────────────────
 # Class Names — Must Match Training Exactly
@@ -61,16 +26,13 @@ os.makedirs(PREPROCESSED_DIR, exist_ok=True)
 # Safe Model Loader
 # ─────────────────────────────────────────────────────────────
 def load_model_safe(path):
-
     try:
         model = tf.keras.models.load_model(path, compile=False)
         print(f"✅ Loaded: {path}")
         return model
-
     except Exception as e:
         print(f"❌ Failed to load {path}: {e}")
         return None
-
 
 # ─────────────────────────────────────────────────────────────
 # Load Models
@@ -83,7 +45,6 @@ MODELS = {
         "size": (224, 224),
         "grayscale": False
     },
-
     "VGG16": {
         "model": load_model_safe(
             os.path.join(BASE_DIR, "modules/vgg16.keras")
@@ -91,7 +52,6 @@ MODELS = {
         "size": (224, 224),
         "grayscale": False
     },
-
     "InceptionV3": {
         "model": load_model_safe(
             os.path.join(BASE_DIR, "modules/inceptionv3.keras")
@@ -99,7 +59,6 @@ MODELS = {
         "size": (224, 224),
         "grayscale": False
     },
-
     "Hybrid Model": {
         "model": load_model_safe(
             os.path.join(BASE_DIR, "modules/advanced_cnn.keras")
@@ -114,20 +73,18 @@ MODELS = {
 # ─────────────────────────────────────────────────────────────
 def is_ct_image(image_path):
 
+    # ── Force string path ─────────────────────────────────────
     image_path = str(image_path)
 
     # ── Check 1: File Extension ───────────────────────────────
     allowed_extensions = ['.jpg', '.jpeg', '.png']
-
     ext = os.path.splitext(image_path)[1].lower()
-
     if ext not in allowed_extensions:
         print("❌ Rejected: Invalid file format")
         return False
 
-    # ── Check 2: Read Image ───────────────────────────────────
+    # ── Check 2: Fresh Image Read ─────────────────────────────
     img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
-
     if img is None:
         print("❌ Rejected: Cannot read image")
         return False
@@ -135,67 +92,146 @@ def is_ct_image(image_path):
     # ── Convert to BGR if needed ──────────────────────────────
     if len(img.shape) == 2:
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
-
     elif len(img.shape) == 3 and img.shape[2] == 4:
         img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
 
     # ── Check 3: Minimum Size ─────────────────────────────────
     h, w = img.shape[:2]
-
     if h < 50 or w < 50:
         print("❌ Rejected: Image too small")
         return False
 
     # ── Check 4: Grayscale Check ──────────────────────────────
+    # CT scans are always grayscale
     b, g, r = cv2.split(img)
-
     color_diff = (
         np.mean(np.abs(b.astype(int) - g.astype(int))) +
         np.mean(np.abs(g.astype(int) - r.astype(int)))
     )
-
     if color_diff > 35:
         print("❌ Rejected: Colored image — not a CT scan")
         return False
 
-    # ── Check 5: Convert to Gray ──────────────────────────────
+    # ── Check 5: Grayscale Conversion ────────────────────────
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
     total_pixels = gray.size
 
     # ── Check 6: Dark Background ──────────────────────────────
     dark_pixels = np.sum(gray < 30)
-
     dark_ratio = dark_pixels / total_pixels
-
     if dark_ratio < 0.10:
-        print("❌ Rejected: No dark background")
+        print("❌ Rejected: No dark background — not a CT scan")
         return False
 
-    # ── Check 7: Bright Region Check ──────────────────────────
+    # ── Check 7: Bright Region Check ─────────────────────────
     bright_pixels = np.sum(gray > 30)
-
     bright_ratio = bright_pixels / total_pixels
-
     if bright_ratio < 0.05 or bright_ratio > 0.98:
         print("❌ Rejected: Invalid pixel distribution")
         return False
 
     # ── Check 8: Texture Check ────────────────────────────────
+    # CT scans have complex tissue textures
+    # Use Laplacian variance to measure texture complexity
     laplacian = cv2.Laplacian(gray, cv2.CV_64F)
-
     texture_score = laplacian.var()
-
     if texture_score < 50:
-        print("❌ Rejected: No texture")
+        print("❌ Rejected: No texture — not a CT scan")
         return False
 
-    # ── Cleanup ───────────────────────────────────────────────
+    # ── Check 9: Lung Field Detection ────────────────────────
+    # Lungs appear as two large dark oval regions flanking
+    # a brighter central mediastinum/spine in the middle third.
+    # We detect bilateral (left + right) lung fields to confirm
+    # this is specifically a lung CT and not brain/kidney/abdomen.
+
+    # Step 9a: Threshold to isolate mid-density pixels
+    # Lung parenchyma: darker than bone/mediastinum, lighter than background
+    # Range: 30–200 gray value isolates lung tissue well
+    _, lung_thresh = cv2.threshold(gray, 30, 255, cv2.THRESH_BINARY)
+    _, upper_thresh = cv2.threshold(gray, 200, 255, cv2.THRESH_BINARY_INV)
+
+    # Combine: pixels that are mid-range (not black background, not bone-white)
+    lung_mask = cv2.bitwise_and(lung_thresh, upper_thresh)
+
+    # Step 9b: Morphological cleanup
+    # Close small gaps within lung tissue, remove noise
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (15, 15))
+    lung_mask = cv2.morphologyEx(lung_mask, cv2.MORPH_CLOSE, kernel)
+    lung_mask = cv2.morphologyEx(lung_mask, cv2.MORPH_OPEN, kernel)
+
+    # Step 9c: Find contours of candidate lung regions
+    contours, _ = cv2.findContours(
+        lung_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+    )
+
+    # Step 9d: Filter for large regions
+    # Lungs are big — each should be at least 3% of total image area
+    min_area = total_pixels * 0.03
+    large_regions = [c for c in contours if cv2.contourArea(c) > min_area]
+
+    if len(large_regions) < 2:
+        print("❌ Rejected: Could not detect two distinct lung fields")
+        del lung_mask, lung_thresh, upper_thresh
+        gc.collect()
+        return False
+
+    # Step 9e: Check left-right bilateral symmetry
+    # Lungs must be on OPPOSITE sides of the image center
+    # Brain CTs have symmetric halves but don't split left/right the same way
+    centroids_x = []
+    for c in sorted(large_regions, key=cv2.contourArea, reverse=True)[:2]:
+        M = cv2.moments(c)
+        if M["m00"] > 0:
+            centroids_x.append(M["m10"] / M["m00"])
+
+    if len(centroids_x) == 2:
+        img_center_x = w / 2
+        # One centroid must be clearly left of center, one clearly right
+        left_side  = any(x < img_center_x * 0.85 for x in centroids_x)
+        right_side = any(x > img_center_x * 1.15 for x in centroids_x)
+
+        if not (left_side and right_side):
+            print("❌ Rejected: Lung-like regions not bilaterally symmetric — not a lung CT")
+            del lung_mask, lung_thresh, upper_thresh
+            gc.collect()
+            return False
+
+    # Step 9f: Aspect ratio sanity check
+    # Axial lung CT slices are roughly square or slightly wider than tall
+    # Very tall narrow images are likely sagittal/coronal — reject
+    aspect_ratio = w / h
+    if aspect_ratio < 0.5 or aspect_ratio > 2.5:
+        print("❌ Rejected: Unusual aspect ratio — likely not an axial lung CT")
+        del lung_mask, lung_thresh, upper_thresh
+        gc.collect()
+        return False
+
+    # Step 9g: Central bright band check (mediastinum/spine)
+    # In axial lung CTs the center vertical strip is brighter
+    # (heart + spine + mediastinum) while both sides are darker (lungs)
+    center_strip_x1 = int(w * 0.35)
+    center_strip_x2 = int(w * 0.65)
+    left_strip_x2   = int(w * 0.30)
+    right_strip_x1  = int(w * 0.70)
+
+    center_mean = np.mean(gray[:, center_strip_x1:center_strip_x2])
+    left_mean   = np.mean(gray[:, :left_strip_x2])
+    right_mean  = np.mean(gray[:, right_strip_x1:])
+
+    # Center should be brighter than both sides (mediastinum brighter than lungs)
+    if not (center_mean > left_mean * 1.05 and center_mean > right_mean * 1.05):
+        print("❌ Rejected: No central bright band — not a typical axial lung CT")
+        del lung_mask, lung_thresh, upper_thresh
+        gc.collect()
+        return False
+
+    # ── Clear memory ──────────────────────────────────────────
     del img, gray, b, g, r, laplacian
+    del lung_mask, lung_thresh, upper_thresh
     gc.collect()
 
-    print("✅ Valid CT scan accepted!")
-
+    print("✅ Valid Lung CT scan accepted!")
     return True
 
 
@@ -205,7 +241,6 @@ def is_ct_image(image_path):
 def preprocess_and_save(image_path):
 
     image_path = str(image_path)
-
     img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
 
     if img is None:
@@ -214,20 +249,14 @@ def preprocess_and_save(image_path):
     # Convert to BGR if needed
     if len(img.shape) == 2:
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
-
     elif len(img.shape) == 3 and img.shape[2] == 4:
         img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
 
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     filename = f"{uuid.uuid4().hex}.jpg"
-
     save_path = os.path.join(PREPROCESSED_DIR, filename)
-
-    cv2.imwrite(
-        save_path,
-        cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-    )
+    cv2.imwrite(save_path, cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
 
     return img
 
@@ -250,7 +279,6 @@ def preprocess_for_model(img, target_size, grayscale=False):
         img = np.repeat(img, 3, axis=-1)
 
     img = np.nan_to_num(img).astype("float32") / 255.0
-
     img = np.expand_dims(img, axis=0)
 
     return img
@@ -261,35 +289,34 @@ def preprocess_for_model(img, target_size, grayscale=False):
 # ─────────────────────────────────────────────────────────────
 def predict_lung_cancer(image_path):
 
+    # ── Force string path ─────────────────────────────────────
     image_path = str(image_path)
 
-    # ── Cleanup Before Prediction ─────────────────────────────
-    # cv2.destroyAllWindows()
+    # ── Clear cached data every time ─────────────────────────
+    cv2.destroyAllWindows()
     gc.collect()
 
     # ── Validate CT Scan ──────────────────────────────────────
     if not is_ct_image(image_path):
-
         return {
-            "error":
-            "Invalid image! Please upload a Lung CT scan image only."
+            "error": (
+                "Invalid image! Please upload a Lung CT scan image only. "
+                "X-rays, hand/leg/kidney/brain scans, documents, "
+                "and other images are not accepted."
+            )
         }
 
-    # ── Preprocess Image ──────────────────────────────────────
+    # ── Preprocess and Save ───────────────────────────────────
     img = preprocess_and_save(image_path)
 
     results = {}
-
     predictions = []
-
     confidences = []
 
     # ── Predict From All Models ───────────────────────────────
     for model_name, cfg in MODELS.items():
-
         try:
             model = cfg["model"]
-
             if model is None:
                 raise ValueError("Model not loaded")
 
@@ -300,17 +327,13 @@ def predict_lung_cancer(image_path):
             )
 
             probs = model.predict(input_img, verbose=0)[0]
-
             probs = np.nan_to_num(probs)
 
             idx = int(np.argmax(probs))
-
             predicted_class = CLASS_NAMES[idx]
-
             confidence = float(probs[idx]) * 100
 
             predictions.append(predicted_class)
-
             confidences.append(confidence)
 
             results[model_name] = {
@@ -318,35 +341,24 @@ def predict_lung_cancer(image_path):
                 "confidence": round(confidence, 2)
             }
 
+            # Clear input after each model
             del input_img
             gc.collect()
 
         except Exception as e:
-
             print(f"❌ Error in {model_name}: {e}")
-
             results[model_name] = {
                 "case": "Error",
                 "confidence": 0
             }
 
     # ── Ensemble Voting ───────────────────────────────────────
-    valid_predictions = [
-        p for p in predictions if p != "Error"
-    ]
+    valid_predictions = [p for p in predictions if p != "Error"]
 
     if valid_predictions:
-
-        final_case = Counter(
-            valid_predictions
-        ).most_common(1)[0][0]
-
-        final_confidence = round(
-            np.mean(confidences), 2
-        )
-
+        final_case = Counter(valid_predictions).most_common(1)[0][0]
+        final_confidence = round(np.mean(confidences), 2)
     else:
-
         final_case = "Error"
         final_confidence = 0
 
@@ -357,7 +369,7 @@ def predict_lung_cancer(image_path):
 
     results["final_case"] = final_case
 
-    # ── Cleanup After Prediction ──────────────────────────────
+    # ── Clear memory after prediction ─────────────────────────
     del img
     gc.collect()
 
