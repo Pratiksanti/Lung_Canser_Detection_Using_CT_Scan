@@ -2,8 +2,6 @@ import tensorflow as tf
 import cv2
 import numpy as np
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'   # ← add this as first line
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import uuid
 import gc
 from collections import Counter
@@ -283,7 +281,7 @@ def predict_lung_cancer(image_path):
     image_path = str(image_path)
 
     # ── Clear cached data every time ─────────────────────────
-    gc.collect()  # ✅ Removed cv2.destroyAllWindows() — not supported on server
+    gc.collect()  
 
     # ── Validate CT Scan ──────────────────────────────────────
     if not is_ct_image(image_path):
