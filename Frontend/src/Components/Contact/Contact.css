@@ -168,25 +168,45 @@ textarea.error {
 }
 
 /* ---- Responsive ---- */
+@media (max-width: 880px) {
+  .contact-card {
+    grid-template-columns: 1fr;  /* ← stack title above form */
+    padding: 24px 20px;
+  }
+}
+
 @media (max-width: 520px) {
+  .contact-shell {
+    padding: 16px 12px;          /* ← remove huge top space */
+    align-items: flex-start;
+    padding-top: 20px;
+  }
+
+  .contact-card {
+    grid-template-columns: 1fr;  /* ← single column */
+    padding: 20px 16px;
+    width: 100%;
+  }
+
+  .contact-header h2 {
+    font-size: 22px;
+  }
+
   .btn-primary,
   .btn-ghost {
     width: 100%;
   }
 
   .form-actions {
-    flex-direction: column; /* ← buttons stack vertically */
-  }
-
-  .contact-shell {
-    padding: 30px 16px;    /* ← less padding on small screens */
-  }
-
-  .contact-header h2 {
-    font-size: 22px;       /* ← title fits better */
+    flex-direction: column;
   }
 
   .error-message {
-    width: 100%;           /* ← error msg doesn't overflow */
+    width: 100%;
+  }
+
+  input,
+  textarea {
+    font-size: 16px;             /* ← prevents iOS auto-zoom */
   }
 }

@@ -63,9 +63,14 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  .footer {
+    padding: 24px 16px 16px;   /* ← less padding */
+  }
+
   .footer-container {
     flex-direction: column;
     text-align: center;
+    gap: 16px;                 /* ← less gap between sections */
   }
 
   .footer-section {
@@ -75,9 +80,20 @@
   .footer-section h3 {
     border: none;
     display: block;
+    font-size: 17px;           /* ← smaller heading */
+    margin-bottom: 8px;        /* ← less space below heading */
+  }
+
+  .footer-section p {
+    font-size: 13px;           /* ← smaller text */
   }
 
   .footer-section ul li {
-    margin: 12px 0;
+    margin: 6px 0;             /* ← less gap between links */
+  }
+
+  .footer-bottom {
+    margin-top: 16px;          /* ← less top margin */
+    font-size: 12px;
   }
 }

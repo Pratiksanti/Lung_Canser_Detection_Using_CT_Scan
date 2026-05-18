@@ -94,8 +94,10 @@ function Navbar() {
             LungCare
           </Link>
         </div>
-
-        <ul className={`nav-links ${isOpen ? "open" : ""}`}>
+        <ul
+          className={`nav-links ${isOpen ? "open" : ""}`}
+          onClick={() => setIsOpen(false)}
+        >
           <li>
             <Link to="/">Home</Link>
           </li>
@@ -120,7 +122,6 @@ function Navbar() {
             <Link to="/hospitals">Find Hospitals</Link>
           </li>
         </ul>
-
         <div className="nav-actions">
           {isAuthenticated ? (
             <div
