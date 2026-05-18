@@ -81,74 +81,145 @@ MODELS = {
 }
 
 # ─────────────────────────────────────────────────────────────
-# CT Scan Validation — Simple and Relaxed
+# CT Scan Validation — Lung CT Only
+#
+# How each CT type is distinguished:
+#
+#   Lung CT   → lungs are filled with air (very dark internally)
+#               → large dark areas INSIDE the body (center of image)
+#               → center_dark_ratio typically > 0.15
+#               → overall_dark_ratio typically > 0.35
+#               → mean brightness typically 40–90
+#
+#   Brain CT  → skull ring + uniform gray brain tissue
+#               → almost no dark pixels in center
+#               → center_dark_ratio < 0.10
+#               → overall_dark_ratio 0.15–0.30
+#               → mean brightness 80–120
+#
+#   Abdomen / Kidney CT → dense organs, moderate dark bg
+#               → center filled with organs (not dark)
+#               → center_dark_ratio < 0.12
+#               → overall_dark_ratio 0.20–0.38
+#
+#   X-ray (chest) → very bright overall, mean > 110
+#   X-ray (limb)  → blue tint, wide aspect ratio
 # ─────────────────────────────────────────────────────────────
 def is_ct_image(image_path):
     image_path = str(image_path)
 
-    # Check 1: File Extension
+    # ── Check 1: File Extension ───────────────────────────────
     allowed_extensions = ['.jpg', '.jpeg', '.png']
     ext = os.path.splitext(image_path)[1].lower()
     if ext not in allowed_extensions:
         print("❌ Rejected: Invalid file format")
         return False
 
-    # Check 2: Read Image
+    # ── Check 2: Read Image ───────────────────────────────────
     img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
     if img is None:
         print("❌ Rejected: Cannot read image")
         return False
 
-    # Convert to BGR
+    # ── Normalize to BGR ──────────────────────────────────────
     if len(img.shape) == 2:
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     elif len(img.shape) == 3 and img.shape[2] == 4:
         img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
 
-    # Check 3: Minimum Size
+    # ── Check 3: Minimum Size ─────────────────────────────────
     h, w = img.shape[:2]
     if h < 50 or w < 50:
         print("❌ Rejected: Image too small")
         return False
 
-    # Check 4: Not a Colored Image (CT scans are grayscale)
+    # ── Check 4: Aspect Ratio ─────────────────────────────────
+    # Lung CT axial slices are roughly square
+    # Limb X-rays are tall or very wide
+    aspect_ratio = w / h
+    if aspect_ratio > 1.4 or aspect_ratio < 0.70:
+        print(f"❌ Rejected: Aspect ratio {aspect_ratio:.2f} — "
+              f"not a lung CT (expected 0.70–1.40)")
+        return False
+
+    # ── Check 5: Color Tint ───────────────────────────────────
+    # CT scans are true grayscale (R == G == B)
+    # Colored or blue-tinted images are not CT scans
     b, g, r = cv2.split(img)
     color_diff = (
         np.mean(np.abs(b.astype(int) - g.astype(int))) +
         np.mean(np.abs(g.astype(int) - r.astype(int)))
     )
-    if color_diff > 40:
-        print("❌ Rejected: Colored image — not a CT scan")
+    if color_diff > 15:
+        print(f"❌ Rejected: Color tint detected (diff={color_diff:.2f}) — "
+              f"not a CT scan")
         return False
 
-    # Check 5: Has Dark Background
+    # ── Convert to grayscale for remaining checks ─────────────
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     total_pixels = gray.size
-    dark_pixels = np.sum(gray < 30)
-    dark_ratio = dark_pixels / total_pixels
-    if dark_ratio < 0.08:
-        print("❌ Rejected: No dark background")
+
+    # ── Check 6: Overall Mean Brightness ─────────────────────
+    # Chest X-rays: mean > 110 (very bright)
+    # Lung CT: mean typically 40–95
+    # Brain/abdomen CT: mean 70–110
+    mean_gray = np.mean(gray)
+    if mean_gray > 110:
+        print(f"❌ Rejected: Too bright (mean={mean_gray:.2f}) — "
+              f"likely a chest X-ray, not a CT scan")
         return False
 
-    # Check 6: Has Bright Regions
-    bright_pixels = np.sum(gray > 30)
-    bright_ratio = bright_pixels / total_pixels
-    if bright_ratio < 0.05:
-        print("❌ Rejected: No bright content")
+    # ── Check 7: Overall Dark Ratio ──────────────────────────
+    # Lung CT has a lot of dark pixels (air outside + lung fields)
+    # Overall dark ratio > 0.30 for lung CT
+    overall_dark = np.sum(gray < 50) / total_pixels
+    if overall_dark < 0.30:
+        print(f"❌ Rejected: Not enough dark pixels overall "
+              f"(dark={overall_dark:.3f}) — "
+              f"likely brain/abdomen CT, not lung CT")
         return False
 
-    # Check 7: Has Texture
+    # ── Check 8: Center Dark Ratio (KEY lung CT check) ───────
+    # Lung CT has dark air-filled lung fields in the CENTER
+    # Brain CT center = gray brain tissue (not dark)
+    # Abdomen CT center = dense organs (not dark)
+    # This is the PRIMARY check that separates lung from other CT types
+    cy1, cy2 = int(h * 0.20), int(h * 0.80)
+    cx1, cx2 = int(w * 0.20), int(w * 0.80)
+    center_region = gray[cy1:cy2, cx1:cx2]
+    center_dark = np.sum(center_region < 50) / center_region.size
+
+    if center_dark < 0.15:
+        print(f"❌ Rejected: No dark lung fields in center "
+              f"(center_dark={center_dark:.3f}) — "
+              f"likely brain/abdomen/kidney CT, not lung CT")
+        return False
+
+    # ── Check 9: Texture Check ────────────────────────────────
+    # CT scans have complex tissue texture
     laplacian = cv2.Laplacian(gray, cv2.CV_64F)
     texture_score = laplacian.var()
     if texture_score < 30:
-        print("❌ Rejected: No texture")
+        print(f"❌ Rejected: Insufficient texture "
+              f"(score={texture_score:.2f}) — not a CT scan")
         return False
 
-    del img, gray, b, g, r, laplacian
+    # ── Check 10: Bright Bone Pixels ─────────────────────────
+    # Lung CT has spine + ribs visible but limited overall bright area
+    # Too many bright pixels = likely X-ray
+    bright_ratio = np.sum(gray > 200) / total_pixels
+    if bright_ratio > 0.25:
+        print(f"❌ Rejected: Too many bright pixels "
+              f"(bright={bright_ratio:.3f}) — likely an X-ray")
+        return False
+
+    # ── Clear memory ──────────────────────────────────────────
+    del img, gray, b, g, r, laplacian, center_region
     gc.collect()
 
-    print("✅ Valid CT scan accepted!")
+    print("✅ Valid lung CT scan accepted!")
     return True
+
 
 # ─────────────────────────────────────────────────────────────
 # Save Preprocessed Image
@@ -168,6 +239,7 @@ def preprocess_and_save(image_path):
     cv2.imwrite(save_path, cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
     return img
 
+
 # ─────────────────────────────────────────────────────────────
 # Model Preprocessing
 # ─────────────────────────────────────────────────────────────
@@ -184,6 +256,7 @@ def preprocess_for_model(img, target_size, grayscale=False):
     img = np.expand_dims(img, axis=0)
     return img
 
+
 # ─────────────────────────────────────────────────────────────
 # Lung Cancer Prediction
 # ─────────────────────────────────────────────────────────────
@@ -193,7 +266,11 @@ def predict_lung_cancer(image_path):
 
     if not is_ct_image(image_path):
         return {
-            "error": "Invalid image! Please upload a Lung CT scan image only. X-rays, hand/leg/kidney scans, documents and other images are not accepted."
+            "error": (
+                "Invalid image! Please upload a Lung CT scan image only. "
+                "Brain CT, abdomen CT, kidney CT, X-rays, and all "
+                "other scan types are not accepted."
+            )
         }
 
     img = preprocess_and_save(image_path)
