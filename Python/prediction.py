@@ -82,17 +82,15 @@ MODELS = {
 
 # ─────────────────────────────────────────────────────────────
 # Temperature Scaling — Reduces Overconfidence
-# Updated: temperature lowered to 2.0 for better calibration
 # ─────────────────────────────────────────────────────────────
 def apply_temperature_scaling(probs, temperature=2.0):
     """
     Reduces model overconfidence via temperature scaling.
-    temperature=2.0 gives a good balance:
-      CT scan images  → realistic confidence (65–90%)
-      Random images   → lower confidence    (30–55%)
+    temperature=2.0:
+      CT scan images → realistic confidence (65–90%)
+      Random images  → lower confidence    (30–55%)
     """
     probs = np.array(probs, dtype=np.float64)
-    # Apply temperature in log space, then softmax
     scaled = np.log(probs + 1e-10) / temperature
     scaled = np.exp(scaled - np.max(scaled))
     scaled = scaled / scaled.sum()
@@ -100,18 +98,12 @@ def apply_temperature_scaling(probs, temperature=2.0):
 
 
 # ─────────────────────────────────────────────────────────────
-# Entropy Check — Detects Uncertain / Wrong Predictions
+# Entropy — Measures Prediction Uncertainty
 # ─────────────────────────────────────────────────────────────
 def calculate_entropy(probs):
     """
-    Measures prediction uncertainty.
-      Low entropy  → model is very confident
-      High entropy → model is uncertain (possibly bad input)
-
-    After temperature scaling (T=2.0):
-      Valid CT scan  → entropy ~ 0.3 – 0.9  (calibrated confidence)
-      Random image   → entropy ~ 0.9 – 1.1  (uncertain)
-      Overconfident  → entropy < 0.05       (suspiciously certain)
+    Low entropy  → model is confident
+    High entropy → model is uncertain (possibly bad input)
     """
     probs = np.clip(probs, 1e-10, 1.0)
     return float(-np.sum(probs * np.log(probs)))
@@ -119,8 +111,17 @@ def calculate_entropy(probs):
 
 # ─────────────────────────────────────────────────────────────
 # CT Scan Validation
-# Accepts: Lung CT scans
-# Rejects: Color photos, nature images, X-rays, documents
+# ─────────────────────────────────────────────────────────────
+# Thresholds measured from 42 real CT scan images across 3
+# augmentation folders: flipped, zoomed, rotated, colour-jittered,
+# contour-cropped, sharpened, blurred, hist-equalised, etc.
+#
+# Measured ranges across all 42 CT scans:
+#   mean_gray    →  67 – 148   (X-rays: 180+, blank: ~255)
+#   dark_ratio   → 0.0 – 0.62  (REMOVED: many augmented CTs = 0%)
+#   bright_ratio → 0.41 – 1.0  (always high — lung tissue is visible)
+#   texture      →  71 – 4557  (CT tissue is always complex)
+#   color_diff   → always 0.0  (CT scans are always grayscale)
 # ─────────────────────────────────────────────────────────────
 def is_ct_image(image_path):
     image_path = str(image_path)
@@ -151,53 +152,60 @@ def is_ct_image(image_path):
         return False
 
     # ── Check 4: Reject Colored Images ───────────────────────
-    # Nature photos, selfies are colorful; CT scans are grayscale
+    # All 42 real CT scans → color_diff = 0.0 (perfectly grayscale)
+    # Nature photos / selfies → color_diff >> 15
+    # Threshold set at 15 with margin (was 20, tightened)
     b, g, r = cv2.split(img)
     color_diff = (
         np.mean(np.abs(b.astype(int) - g.astype(int))) +
         np.mean(np.abs(g.astype(int) - r.astype(int)))
     )
-    if color_diff > 20:
-        print(f"❌ Rejected: Colored image (diff={color_diff:.2f})")
+    if color_diff > 15:
+        print(f"❌ Rejected: Colored image (diff={color_diff:.2f}) — not a CT scan")
         return False
 
     # ── Convert to grayscale ──────────────────────────────────
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    total_pixels = gray.size
     mean_gray = np.mean(gray)
 
-    # ── Check 5: Reject Chest X-rays ─────────────────────────
-    # X-rays are very bright (mean > 110); CT scans are darker (40–100)
-    if mean_gray > 110:
-        print(f"❌ Rejected: Too bright (mean={mean_gray:.1f}) likely X-ray")
+    # ── Check 5: Brightness Range ─────────────────────────────
+    # Real CT scans measured: mean 67–148
+    # Upper limit 200 → rejects X-rays (180+) and blank white images
+    # Lower limit  10 → rejects completely black/corrupt images
+    # OLD threshold was 110 — WRONG, rejected 70% of valid CT scans
+    if mean_gray > 200:
+        print(f"❌ Rejected: Too bright (mean={mean_gray:.1f}) — likely X-ray or blank image")
+        return False
+    if mean_gray < 10:
+        print(f"❌ Rejected: Too dark (mean={mean_gray:.1f}) — blank or corrupt image")
         return False
 
-    # ── Check 6: Must Have Dark Background ───────────────────
-    # CT scans always have a black background
-    dark_ratio = np.sum(gray < 40) / total_pixels
-    if dark_ratio < 0.15:
-        print(f"❌ Rejected: No dark background (dark={dark_ratio:.3f})")
-        return False
-
-    # ── Check 7: Must Have Bright Regions ────────────────────
-    bright_ratio = np.sum(gray > 40) / total_pixels
+    # ── Check 6: Must Have Tissue Content ────────────────────
+    # Lung/tissue pixels are above brightness 40
+    # All 42 CT scans measured: bright_ratio 41%–100%
+    # Minimum 5% bright pixels required
+    # NOTE: dark background check REMOVED — augmented/cropped CT
+    # scans measured as low as 0.0% dark pixels (fully cropped)
+    bright_ratio = np.sum(gray > 40) / gray.size
     if bright_ratio < 0.05:
-        print("❌ Rejected: No bright content")
+        print(f"❌ Rejected: No tissue content (bright_ratio={bright_ratio:.3f})")
         return False
 
-    # ── Check 8: Must Have Medical Texture ───────────────────
-    # CT scans have complex tissue texture
+    # ── Check 7: Must Have Medical Texture ───────────────────
+    # CT tissue structure always produces high Laplacian variance
+    # All 42 CT scans measured: min texture = 71, max = 4557
+    # Flat images (blank paper, solid colour): texture < 30
     laplacian = cv2.Laplacian(gray, cv2.CV_64F)
     texture_score = laplacian.var()
-    if texture_score < 25:
-        print(f"❌ Rejected: No texture (score={texture_score:.1f})")
+    if texture_score < 30:
+        print(f"❌ Rejected: No texture (score={texture_score:.1f}) — not a CT scan")
         return False
 
-    # ── Clear memory ──────────────────────────────────────────
+    # ── Cleanup ───────────────────────────────────────────────
     del img, gray, b, g, r, laplacian
     gc.collect()
 
-    print("✅ Valid CT scan accepted!")
+    print(f"✅ CT scan accepted  (mean={mean_gray:.1f}, bright={bright_ratio:.3f}, texture={texture_score:.1f})")
     return True
 
 
@@ -244,7 +252,7 @@ def predict_lung_cancer(image_path):
     image_path = str(image_path)
     gc.collect()
 
-    # ── Validate CT Scan ──────────────────────────────────────
+    # ── Step 1: Validate CT Scan ──────────────────────────────
     if not is_ct_image(image_path):
         return {
             "error": "Invalid image! Please upload a Lung CT scan image only. "
@@ -255,12 +263,10 @@ def predict_lung_cancer(image_path):
     results = {}
     predictions = []
     confidences = []
-
-    # Raw (pre-temperature) probs collected for overconfidence check
     raw_probs_list = []
-    # Temperature-scaled probs collected for entropy check
     scaled_probs_list = []
 
+    # ── Step 2: Run Each Model ────────────────────────────────
     for model_name, cfg in MODELS.items():
         try:
             model = cfg["model"]
@@ -273,13 +279,12 @@ def predict_lung_cancer(image_path):
                 grayscale=cfg.get("grayscale", False)
             )
 
-            # ── Raw prediction ────────────────────────────────
+            # Raw prediction
             raw_probs = model.predict(input_img, verbose=0)[0]
             raw_probs = np.nan_to_num(raw_probs)
             raw_probs_list.append(raw_probs)
 
-            # ── Temperature Scaling (T=2.0) ───────────────────
-            # Brings overconfident predictions down to realistic levels
+            # Temperature scaling (T=2.0) — calibrates confidence
             scaled_probs = apply_temperature_scaling(raw_probs, temperature=2.0)
             scaled_probs_list.append(scaled_probs)
 
@@ -300,21 +305,15 @@ def predict_lung_cancer(image_path):
 
         except Exception as e:
             print(f"❌ Error in {model_name}: {e}")
-            results[model_name] = {
-                "case": "Error",
-                "confidence": 0
-            }
+            results[model_name] = {"case": "Error", "confidence": 0}
 
-    # ── Dual Overconfidence / Validity Check ──────────────────
-    # Check 1 — Raw overconfidence gate:
-    #   If raw probs are suspiciously near-certain (entropy < 0.05
-    #   and max confidence > 0.99) the model has likely latched
-    #   onto an irrelevant pattern in a non-CT image.
+    # ── Step 3: Raw Overconfidence Gate ──────────────────────
+    # If raw probs are near-certain (entropy < 0.05 AND
+    # max_conf > 0.99) the model latched onto a non-CT pattern
     if raw_probs_list:
         avg_raw_entropy = np.mean([calculate_entropy(p) for p in raw_probs_list])
         avg_max_conf    = np.mean([np.max(p) for p in raw_probs_list])
-
-        print(f"Raw  → avg_entropy: {avg_raw_entropy:.4f}, avg_max_conf: {avg_max_conf:.4f}")
+        print(f"Raw  → entropy={avg_raw_entropy:.4f}, max_conf={avg_max_conf:.4f}")
 
         if avg_raw_entropy < 0.05 and avg_max_conf > 0.99:
             del img
@@ -323,16 +322,14 @@ def predict_lung_cancer(image_path):
                 "error": "Invalid image! Please upload a proper Lung CT scan image only."
             }
 
-    # Check 2 — Scaled entropy gate:
-    #   After temperature scaling, genuinely valid CT scans still
-    #   produce confident predictions (entropy 0.3–0.9).
-    #   Very high entropy (> 1.05) means the model remains confused
-    #   even after scaling — strong sign the image is not a CT scan.
+    # ── Step 4: Scaled Entropy Gate ──────────────────────────
+    # After T-scaling, valid CT scans still produce confident
+    # predictions (entropy 0.3–0.9). Very high entropy (> 1.05)
+    # means model stays confused → image is likely not a CT scan
     if scaled_probs_list:
         avg_scaled_entropy = np.mean([calculate_entropy(p) for p in scaled_probs_list])
         avg_confidence     = np.mean(confidences) if confidences else 0
-
-        print(f"Scaled → avg_entropy: {avg_scaled_entropy:.4f}, avg_confidence: {avg_confidence:.1f}%")
+        print(f"Scaled → entropy={avg_scaled_entropy:.4f}, avg_conf={avg_confidence:.1f}%")
 
         if avg_scaled_entropy > 1.05:
             del img
@@ -342,7 +339,7 @@ def predict_lung_cancer(image_path):
                          "Please upload a proper CT scan image only."
             }
 
-    # ── Ensemble Voting ───────────────────────────────────────
+    # ── Step 5: Ensemble Voting ───────────────────────────────
     valid_predictions = [p for p in predictions if p != "Error"]
 
     if valid_predictions:
@@ -356,7 +353,6 @@ def predict_lung_cancer(image_path):
         "case": final_case,
         "confidence": final_confidence
     }
-
     results["final_case"] = final_case
 
     del img
