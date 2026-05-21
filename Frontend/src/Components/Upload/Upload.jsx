@@ -30,7 +30,6 @@ function Upload() {
 
     setMessage("");
     setFile(uploaded);
-
     setPreprocessLoading(true);
 
     const img = new Image();
@@ -42,7 +41,6 @@ function Upload() {
       canvas.height = 224;
       const ctx = canvas.getContext("2d");
       ctx.drawImage(img, 0, 0, 224, 224);
-
       const processedURL = canvas.toDataURL("image/jpeg");
       setPreprocessImg(processedURL);
       setPreprocessLoading(false);
@@ -74,10 +72,8 @@ function Upload() {
         return;
       }
 
-      // Save results
       localStorage.setItem("modelResults", JSON.stringify(data));
 
-      // Save image as base64 so SaveReport can use it automatically
       const reader = new FileReader();
       reader.onloadend = () => {
         localStorage.setItem("uploadedScanImage", reader.result);
@@ -95,10 +91,12 @@ function Upload() {
   return (
     <div className="upload-page">
       <h1 className="main-title">Lung Cancer Detection System</h1>
-      <p className="subtitle">Upload your CT scan for prediction</p>
 
       <div className="upload-card">
         <h2>Upload CT Scan Image</h2>
+
+        {/* Subtitle centered inside card above images */}
+        <p className="subtitle">Upload your CT scan for prediction</p>
 
         <div className="image-row">
           <div className="img-box">
@@ -141,12 +139,12 @@ function Upload() {
         </button>
 
         {message && <p className="upload-message">{message}</p>}
-      </div>
 
-      {/* Warning below card */}
-      <p className="ct-warning">
-        ⚠️ Please upload Lung CT Scan images only. Other images will be rejected.
-      </p>
+        {/* Warning note inside card below button */}
+        <p className="ct-warning">
+          ⚠️ Please upload Lung CT Scan images only. Other images will be rejected.
+        </p>
+      </div>
     </div>
   );
 }
