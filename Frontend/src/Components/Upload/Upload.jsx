@@ -96,7 +96,7 @@ function Upload() {
         <h2>Upload CT Scan Image</h2>
 
         {/* Subtitle centered inside card above images */}
-        <p className="subtitle" style={{ textAlign: "center", width: "100%" }}>Upload your CT scan for prediction</p>
+        <p className="subtitle">Upload your CT scan for prediction</p>
 
         <div className="image-row">
           <div className="img-box">
