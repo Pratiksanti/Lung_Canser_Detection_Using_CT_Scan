@@ -61,7 +61,7 @@ function Upload() {
     try {
       setLoading(true);
 
-      const res = await fetch("https://pratiksanti-lung-cancer-python.hf.space/predict",  {
+      const res = await fetch("https://pratiksanti-lung-cancer-python.hf.space/predict", {
         method: "POST",
         body: formData,
       });
@@ -77,7 +77,7 @@ function Upload() {
       // Save results
       localStorage.setItem("modelResults", JSON.stringify(data));
 
-      //  Save image as base64 so SaveReport can use it automatically
+      // Save image as base64 so SaveReport can use it automatically
       const reader = new FileReader();
       reader.onloadend = () => {
         localStorage.setItem("uploadedScanImage", reader.result);
@@ -142,6 +142,11 @@ function Upload() {
 
         {message && <p className="upload-message">{message}</p>}
       </div>
+
+      {/* Warning below card */}
+      <p className="ct-warning">
+        ⚠️ Please upload Lung CT Scan images only. Other images will be rejected.
+      </p>
     </div>
   );
 }
